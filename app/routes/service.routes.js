@@ -9,5 +9,17 @@ module.exports = app => {
     // Retrieve all services
     router.get("/", services.findAll);
 
+    // Retrieve a single service with id
+    router.get("/:id", services.findOne);
+
+    // Update a service with id
+    router.put("/:id", services.update);
+
+    // Delete a service with id
+    router.delete("/:id", services.delete);
+
+    // Create all services
+    router.delete("/", services.deleteAll);
+
     app.use('/api/services', router);
 };

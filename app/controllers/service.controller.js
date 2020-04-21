@@ -19,7 +19,7 @@ exports.create = (req, res) => {
         published: req.body.published ? req.body.published : false
     };
 
-    // Save Tutorial in the database
+    // Save service in the database
     Service.create(service)
         .then(data => {
             res.send(data);
@@ -33,7 +33,7 @@ exports.create = (req, res) => {
 
 };
 
-// Retrieve all from the database.
+// Retrieve all services from the database.
 exports.findAll = (req, res) => {
 
     const title = req.query.title;
@@ -52,22 +52,84 @@ exports.findAll = (req, res) => {
 
 };
 
-// Find a single with an id
+// Find a single service with an id
 exports.findOne = (req, res) => {
+    const id = req.params.id;
 
+    Service.findByPk(id)
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error retrieving service with id=" + id
+            });
+        });
 };
 
-// Update by the id in the request
+// Update service by the id in the request
 exports.update = (req, res) => {
+    const id = req.params.id;
 
+    Service.update(req.body, {
+        where: { id_service: id }
+    })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Service was updated successfully."
+                });
+            } else {
+                res.send({
+                    message: `Cannot update service with id=${id}. Maybe service was not found or req.body is empty!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error updating service with id=" + id
+            });
+        });
 };
 
-// Delete with the specified id in the request
+// Delete service with the specified id in the request
 exports.delete = (req, res) => {
+    const id = req.params.id;
 
+    Service.destroy({
+        where: { id_service: id }
+    })
+        .then(num => {
+            if (num == 1) {
+                res.send({
+                    message: "Service was deleted successfully!"
+                });
+            } else {
+                res.send({
+                    message: `Cannot delete service with id=${id}. Maybe service was not found!`
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete service with id=" + id
+            });
+        });
 };
 
-// Delete all from the database.
+// Delete services all from the database.
 exports.deleteAll = (req, res) => {
-
+    Service.destroy({
+        where: {},
+        truncate: false
+    })
+        .then(nums => {
+            res.send({ message: `${nums} services were deleted successfully!` });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while removing all services."
+            });
+        });
 };
